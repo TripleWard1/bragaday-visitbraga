@@ -21,7 +21,7 @@ export default function RoletaSection() {
         <p className="roleta-sub">
           Passa pelo posto de turismo Visit Braga no Braga Day, gira a roleta e
           habilita-te a prémios com as cores da cidade. Todos jogam, muitos
-          ganham -à Gverreiro!
+          ganham - à Gverreiro!
         </p>
 
         <Roleta />

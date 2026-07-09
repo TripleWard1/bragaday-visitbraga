@@ -65,7 +65,7 @@ export default function JogoSection() {
             <h3>Posto Visit Braga</h3>
             <p>
               O Município de Braga marca presença com um posto de turismo
-              dedicado -com a Roleta Visit Braga, prémios e muitas surpresas
+              dedicado - com a Roleta Visit Braga, prémios e muitas surpresas
               para toda a família.
             </p>
           </article>
