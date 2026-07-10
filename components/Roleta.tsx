@@ -5,8 +5,10 @@ import {
   PREMIOS,
   MENSAGENS_VITORIA,
   MENSAGEM_DERROTA,
+  stockInicial,
   type Premio,
 } from "@/lib/premios";
+import { subscreverStock, reservarPremio, type Stock } from "@/lib/stock";
 import Confetti from "./Confetti";
 
 const N = PREMIOS.length;
@@ -27,15 +29,29 @@ function caminhoFatia(i: number) {
   return `M ${C} ${C} L ${x0} ${y0} A ${R} ${R} 0 0 1 ${x1} ${y1} Z`;
 }
 
-/** escolhe o índice do prémio de acordo com os pesos */
-function sortearPremio(): number {
-  const total = PREMIOS.reduce((s, p) => s + p.peso, 0);
-  let alvo = Math.random() * total;
-  for (let i = 0; i < N; i++) {
-    alvo -= PREMIOS[i].peso;
-    if (alvo <= 0) return i;
+/** um prémio está disponível se o stock for ilimitado (null) ou > 0 */
+function disponivel(p: Premio, stock: Stock): boolean {
+  const s = stock[p.id];
+  return s === null || s === undefined || s > 0;
+}
+
+/** sorteio ponderado apenas entre as fatias com stock */
+function sortearPremio(stock: Stock, excluir: Set<string>): number {
+  const candidatos = PREMIOS.map((p, i) => ({ p, i })).filter(
+    ({ p }) => disponivel(p, stock) && !excluir.has(p.id)
+  );
+  if (candidatos.length === 0) {
+    // caso-limite: tudo esgotado → cai numa fatia "tenta outra vez"
+    const semPremio = PREMIOS.findIndex((p) => !p.ganha);
+    return semPremio >= 0 ? semPremio : 0;
   }
-  return N - 1;
+  const total = candidatos.reduce((s, c) => s + c.p.peso, 0);
+  let alvo = Math.random() * total;
+  for (const c of candidatos) {
+    alvo -= c.p.peso;
+    if (alvo <= 0) return c.i;
+  }
+  return candidatos[candidatos.length - 1].i;
 }
 
 const easeOutQuart = (t: number) => 1 - Math.pow(1 - t, 4);
@@ -46,10 +62,21 @@ export default function Roleta() {
   const [resultado, setResultado] = useState<Premio | null>(null);
   const [mensagem, setMensagem] = useState("");
   const [flash, setFlash] = useState(false);
+  const [stock, setStock] = useState<Stock>(stockInicial);
+  const stockRef = useRef<Stock>(stockInicial());
   const rafRef = useRef<number>(0);
   const audioRef = useRef<AudioContext | null>(null);
 
-  useEffect(() => () => cancelAnimationFrame(rafRef.current), []);
+  useEffect(() => {
+    const cancelar = subscreverStock((s) => {
+      stockRef.current = s;
+      setStock(s);
+    });
+    return () => {
+      cancelar();
+      cancelAnimationFrame(rafRef.current);
+    };
+  }, []);
 
   const som = useCallback((freq: number, dur = 0.06, vol = 0.05) => {
     try {
@@ -82,12 +109,28 @@ export default function Roleta() {
     );
   }, [som]);
 
-  const girar = useCallback(() => {
+  const girar = useCallback(async () => {
     if (aGirar) return;
     setResultado(null);
     setAGirar(true);
 
-    const vencedor = sortearPremio();
+    // sorteia e RESERVA o prémio (transação) antes de animar - se outro
+    // dispositivo levar a última unidade neste instante, volta a sortear
+    let vencedor = -1;
+    const excluir = new Set<string>();
+    for (let tentativa = 0; tentativa < N + 1; tentativa++) {
+      const i = sortearPremio(stockRef.current, excluir);
+      const ok = await reservarPremio(PREMIOS[i].id);
+      if (ok) {
+        vencedor = i;
+        break;
+      }
+      excluir.add(PREMIOS[i].id);
+    }
+    if (vencedor < 0) {
+      vencedor = Math.max(0, PREMIOS.findIndex((p) => !p.ganha));
+    }
+
     const centroFatia = vencedor * SEG + SEG / 2;
     const jitter = (Math.random() - 0.5) * (SEG - 12);
     const alvoBase = (360 - centroFatia + jitter + 360) % 360;
@@ -155,6 +198,10 @@ export default function Roleta() {
               <stop offset="0%" stopColor="#ffffff" />
               <stop offset="100%" stopColor="#e8e0cf" />
             </linearGradient>
+            <linearGradient id="fatiaCinzenta" x1="0" y1="0" x2="1" y2="1">
+              <stop offset="0%" stopColor="#c8c3b8" />
+              <stop offset="100%" stopColor="#a49f93" />
+            </linearGradient>
             <radialGradient id="aroMetal" cx="0.5" cy="0.35" r="0.9">
               <stop offset="0%" stopColor="#3a3a3a" />
               <stop offset="60%" stopColor="#121212" />
@@ -216,11 +263,22 @@ export default function Roleta() {
           >
             {PREMIOS.map((p, i) => {
               const vermelha = i % 2 === 0;
+              const esgotado = !disponivel(p, stock);
+              const corFatia = esgotado
+                ? "url(#fatiaCinzenta)"
+                : vermelha
+                  ? "url(#fatiaVermelha)"
+                  : "url(#fatiaBranca)";
+              const corTexto = esgotado
+                ? "#8a857a"
+                : vermelha
+                  ? "#ffffff"
+                  : "#da2028";
               return (
-                <g key={i}>
+                <g key={p.id}>
                   <path
                     d={caminhoFatia(i)}
-                    fill={vermelha ? "url(#fatiaVermelha)" : "url(#fatiaBranca)"}
+                    fill={corFatia}
                     stroke="#121212"
                     strokeWidth="2.5"
                   />
@@ -231,13 +289,24 @@ export default function Roleta() {
                       textAnchor="middle"
                       fontFamily="var(--font-display), sans-serif"
                       fontSize="16"
-                      fill={vermelha ? "#ffffff" : "#da2028"}
+                      fill={corTexto}
                       style={{ textTransform: "uppercase" }}
                     >
                       {p.nome}
                       {p.linha2 && (
                         <tspan x={C} dy="18">
                           {p.linha2}
+                        </tspan>
+                      )}
+                      {esgotado && (
+                        <tspan
+                          x={C}
+                          dy="17"
+                          fontSize="10.5"
+                          fill="#6d675c"
+                          letterSpacing="1.5"
+                        >
+                          - ESGOTADO -
                         </tspan>
                       )}
                     </text>

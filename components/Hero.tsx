@@ -20,7 +20,7 @@ export default function Hero() {
         ))}
       </div>
 
-      {/* Barra de marcas -SC Braga e Visit Braga sempre visíveis à cabeça */}
+      {/* Barra de marcas - SC Braga e Visit Braga sempre visíveis à cabeça */}
       <div className="barra-marcas">
         <img
           src="/sc-braga.png"

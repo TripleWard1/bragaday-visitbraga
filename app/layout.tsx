@@ -23,7 +23,7 @@ const archivo = Archivo({
 export const metadata: Metadata = {
   title: "SC Braga Day 2026 · 18.07.2026 · Visit Braga",
   description:
-    "Braga Day 2026 -a grande festa dos Gverreiros. Jogo de pré-época SC Braga x Celta de Vigo, apresentação do plantel e a Roleta Visit Braga com prémios. 18 de julho, Estádio Municipal de Braga.",
+    "Braga Day 2026 - a grande festa dos Gverreiros. Jogo de pré-época SC Braga x Celta de Vigo, apresentação do plantel e a Roleta Visit Braga com prémios. 18 de julho, Estádio Municipal de Braga.",
 };
 
 export default function RootLayout({

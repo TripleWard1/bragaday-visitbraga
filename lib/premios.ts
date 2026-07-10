@@ -1,32 +1,47 @@
 /**
- * ROLETA VISIT BRAGA -CONFIGURAÇÃO DOS PRÉMIOS
+ * ROLETA VISIT BRAGA - CONFIGURAÇÃO DOS PRÉMIOS
  * ------------------------------------------------
- * Edita apenas este ficheiro quando os prémios estiverem definidos.
+ * Quando tiveres a lista final, edita apenas este ficheiro.
  *
- * nome  → texto que aparece na fatia da roleta (curto! máx. ~2 palavras por linha)
- * linha2 → (opcional) segunda linha do texto na fatia
- * peso  → probabilidade relativa de sair (maior = mais provável).
- *         Ex.: um prémio com peso 1 sai 6x menos que um com peso 6.
- * ganha → false para fatias "Tenta outra vez" (não mostra festejo de vitória)
+ * id     → identificador único (não repetir!) - é a chave do stock na base de dados
+ * nome   → texto na fatia (curto! máx. ~2 palavras por linha)
+ * linha2 → (opcional) segunda linha
+ * peso   → probabilidade relativa (maior = sai mais vezes)
+ * ganha  → false para fatias "Tenta outra vez"
+ * stock  → unidades disponíveis; null = ilimitado (usa null nas fatias "Tenta outra vez")
+ *
+ * NOTA: o stock aqui é o stock INICIAL. Depois do primeiro arranque,
+ * o stock real vive no Firestore e é gerido em tempo real (ou na página /admin).
+ * Se mudares os valores iniciais aqui, usa o botão "Repor stock inicial" na
+ * página /admin para os aplicar.
  */
 
 export type Premio = {
+  id: string;
   nome: string;
   linha2?: string;
   peso: number;
   ganha: boolean;
+  stock: number | null;
 };
 
 export const PREMIOS: Premio[] = [
-  { nome: "PRÉMIO", linha2: "SURPRESA", peso: 2, ganha: true },
-  { nome: "BRINDE", linha2: "VISIT BRAGA", peso: 5, ganha: true },
-  { nome: "TENTA", linha2: "OUTRA VEZ", peso: 4, ganha: false },
-  { nome: "MAPA &", linha2: "GUIA", peso: 5, ganha: true },
-  { nome: "PIN", linha2: "GVERREIRO", peso: 4, ganha: true },
-  { nome: "TENTA", linha2: "OUTRA VEZ", peso: 4, ganha: false },
-  { nome: "OFERTA", linha2: "ESPECIAL", peso: 3, ganha: true },
-  { nome: "STICKER", linha2: "BRAGA DAY", peso: 5, ganha: true },
+  { id: "surpresa",  nome: "PRÉMIO",  linha2: "SURPRESA",    peso: 2, ganha: true,  stock: 10 },
+  { id: "brinde",    nome: "BRINDE",  linha2: "VISIT BRAGA", peso: 5, ganha: true,  stock: 50 },
+  { id: "tenta1",    nome: "TENTA",   linha2: "OUTRA VEZ",   peso: 4, ganha: false, stock: null },
+  { id: "mapa",      nome: "MAPA &",  linha2: "GUIA",        peso: 5, ganha: true,  stock: 40 },
+  { id: "pin",       nome: "PIN",     linha2: "GVERREIRO",   peso: 4, ganha: true,  stock: 30 },
+  { id: "tenta2",    nome: "TENTA",   linha2: "OUTRA VEZ",   peso: 4, ganha: false, stock: null },
+  { id: "oferta",    nome: "OFERTA",  linha2: "ESPECIAL",    peso: 3, ganha: true,  stock: 15 },
+  { id: "sticker",   nome: "STICKER", linha2: "BRAGA DAY",   peso: 5, ganha: true,  stock: 60 },
 ];
+
+/** mapa { id: stock } com os valores iniciais acima */
+export function stockInicial(): Record<string, number | null> {
+  const s: Record<string, number | null> = {};
+  for (const p of PREMIOS) s[p.id] = p.stock;
+  return s;
+}
 
 /** Mensagens de festejo (escolhida ao acaso quando alguém ganha) */
 export const MENSAGENS_VITORIA = [

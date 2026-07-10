@@ -16,7 +16,7 @@ export default function Rodape() {
       <p>
         SC Braga Day · 18 de julho de 2026 · Estádio Municipal de Braga
         <br />
-        Visit Braga - Divisão de Atividades Económicas e
+        Posto de Turismo Visit Braga - Divisão de Atividades Económicas e
         Turismo · Município de Braga
       </p>
     </footer>

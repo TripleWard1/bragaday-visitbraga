@@ -2,7 +2,7 @@
 
 import { useEffect, useState } from "react";
 
-// Hora de abertura do evento (hora de Portugal continental -verão: UTC+1)
+// Hora de abertura do evento (hora de Portugal continental - verão: UTC+1)
 const DATA_EVENTO = new Date("2026-07-18T10:00:00+01:00").getTime();
 
 type Tempo = { dias: number; horas: number; minutos: number; segundos: number };
