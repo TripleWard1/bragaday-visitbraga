@@ -29,7 +29,9 @@ let stockLocal: Stock = stockInicial();
 const ouvintesLocais = new Set<(s: Stock) => void>();
 
 function emitirLocal() {
-  for (const cb of ouvintesLocais) cb({ ...stockLocal });
+  // forEach em vez de for...of: o tsconfig do template pode ter target "es5",
+  // que não permite iterar Sets diretamente
+  ouvintesLocais.forEach((cb) => cb({ ...stockLocal }));
 }
 
 /** Escuta o stock em tempo real. Devolve função para cancelar. */
