@@ -18,7 +18,7 @@ export default function Rodape() {
         <br />
         Visit Braga - Município de Braga <br />
         Direção Municipal de Desenvolvimento Económico, Turismo e Sustentabilidade <br />
-        Divisão de Atividades Económicas e Turismo · Município de Braga
+        Divisão de Atividades Económicas e Turismo
       </p>
     </footer>
   );
