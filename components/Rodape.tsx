@@ -5,9 +5,9 @@ export default function Rodape() {
         <img src="/sc-braga.png" alt="SC Braga" />
         <img src="/braga-day-logo.png" alt="SC Braga Day 2026" />
         <img
-          src="/visit-braga-rodape.png"
-          alt="Visit Braga"
-          className="rodape-vb"
+          src="/braga-soa-futuro.png"
+          alt="Braga — Soa a Futuro"
+          style={{ width: "clamp(150px, 20vw, 205px)", height: "auto" }}
         />
       </div>
 
@@ -16,9 +16,9 @@ export default function Rodape() {
       <p>
         SC Braga Day · 18 de julho de 2026 · Estádio Municipal de Braga
         <br />
-        Visit Braga · Município de Braga<br /> Direção Municipal de Desenvolvimento Económico, Turismo e Sustentabilidade <br />Divisão de Atividades Económicas e
-        Turismo
+        Posto de Turismo Visit Braga — Divisão de Atividades Económicas e
+        Turismo · Município de Braga
       </p>
-         </footer>
+    </footer>
   );
 }
