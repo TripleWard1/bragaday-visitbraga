@@ -62,15 +62,19 @@ export default function Roleta() {
   const [resultado, setResultado] = useState<Premio | null>(null);
   const [mensagem, setMensagem] = useState("");
   const [flash, setFlash] = useState(false);
-  const [stock, setStock] = useState<Stock>(stockInicial);
+  // stockRef: sempre atualizado ao vivo - usado na LÓGICA do sorteio.
+  // stockVisivel: usado no DESENHO das fatias - fica congelado enquanto a
+  // roleta gira, para a fatia não ficar cinzenta antes do resultado aparecer.
+  const [stockVisivel, setStockVisivel] = useState<Stock>(stockInicial);
   const stockRef = useRef<Stock>(stockInicial());
+  const aGirarRef = useRef(false);
   const rafRef = useRef<number>(0);
   const audioRef = useRef<AudioContext | null>(null);
 
   useEffect(() => {
     const cancelar = subscreverStock((s) => {
       stockRef.current = s;
-      setStock(s);
+      if (!aGirarRef.current) setStockVisivel(s);
     });
     return () => {
       cancelar();
@@ -113,6 +117,7 @@ export default function Roleta() {
     if (aGirar) return;
     setResultado(null);
     setAGirar(true);
+    aGirarRef.current = true;
 
     // sorteia e RESERVA o prémio (transação) antes de animar - se outro
     // dispositivo levar a última unidade neste instante, volta a sortear
@@ -159,6 +164,10 @@ export default function Roleta() {
         rafRef.current = requestAnimationFrame(passo);
       } else {
         setAGirar(false);
+        aGirarRef.current = false;
+        // agora sim: revela o stock atual - se este giro esgotou o prémio,
+        // a fatia desvanece para cinzento neste momento (transição CSS)
+        setStockVisivel({ ...stockRef.current });
         const premio = PREMIOS[vencedor];
         if (premio.ganha) {
           fanfarra();
@@ -263,22 +272,20 @@ export default function Roleta() {
           >
             {PREMIOS.map((p, i) => {
               const vermelha = i % 2 === 0;
-              const esgotado = !disponivel(p, stock);
-              const corFatia = esgotado
-                ? "url(#fatiaCinzenta)"
-                : vermelha
-                  ? "url(#fatiaVermelha)"
-                  : "url(#fatiaBranca)";
-              const corTexto = esgotado
-                ? "#8a857a"
-                : vermelha
-                  ? "#ffffff"
-                  : "#da2028";
+              const esgotado = !disponivel(p, stockVisivel);
               return (
                 <g key={p.id}>
                   <path
                     d={caminhoFatia(i)}
-                    fill={corFatia}
+                    fill={vermelha ? "url(#fatiaVermelha)" : "url(#fatiaBranca)"}
+                    stroke="#121212"
+                    strokeWidth="2.5"
+                  />
+                  {/* camada cinzenta: desvanece por cima quando esgota */}
+                  <path
+                    d={caminhoFatia(i)}
+                    className={`fatia-esgotada${esgotado ? " ativa" : ""}`}
+                    fill="url(#fatiaCinzenta)"
                     stroke="#121212"
                     strokeWidth="2.5"
                   />
@@ -287,9 +294,16 @@ export default function Roleta() {
                       x={C}
                       y={92}
                       textAnchor="middle"
+                      className="texto-fatia"
                       fontFamily="var(--font-display), sans-serif"
                       fontSize="16"
-                      fill={corTexto}
+                      fill={
+                        esgotado
+                          ? "#6d675c"
+                          : vermelha
+                            ? "#ffffff"
+                            : "#da2028"
+                      }
                       style={{ textTransform: "uppercase" }}
                     >
                       {p.nome}
@@ -298,17 +312,19 @@ export default function Roleta() {
                           {p.linha2}
                         </tspan>
                       )}
-                      {esgotado && (
-                        <tspan
-                          x={C}
-                          dy="17"
-                          fontSize="10.5"
-                          fill="#6d675c"
-                          letterSpacing="1.5"
-                        >
-                          - ESGOTADO -
-                        </tspan>
-                      )}
+                    </text>
+                    <text
+                      x={C}
+                      y={p.linha2 ? 145 : 127}
+                      textAnchor="middle"
+                      className={`rotulo-esgotado${esgotado ? " ativa" : ""}`}
+                      fontFamily="var(--font-body), sans-serif"
+                      fontSize="10.5"
+                      fontWeight="700"
+                      fill="#494439"
+                      letterSpacing="1.5"
+                    >
+                      - ESGOTADO -
                     </text>
                   </g>
                 </g>

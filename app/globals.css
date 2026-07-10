@@ -581,6 +581,31 @@ button {
   filter: drop-shadow(0 0 6px rgba(255, 214, 107, 0.9));
 }
 
+/* ---- animação de prémio esgotado ----
+   A camada cinzenta vive por cima de cada fatia com opacidade 0.
+   Quando o último stock é sorteado (e só quando a roleta PARA),
+   desvanece para cinzento com o rótulo "ESGOTADO" a aparecer depois. */
+.fatia-esgotada {
+  opacity: 0;
+  pointer-events: none;
+  transition: opacity 1.1s ease 0.2s;
+}
+.fatia-esgotada.ativa {
+  opacity: 1;
+}
+
+.texto-fatia {
+  transition: fill 1s ease 0.25s;
+}
+
+.rotulo-esgotado {
+  opacity: 0;
+  transition: opacity 0.8s ease 0.75s;
+}
+.rotulo-esgotado.ativa {
+  opacity: 1;
+}
+
 @keyframes piscar {
   0%,
   100% {
