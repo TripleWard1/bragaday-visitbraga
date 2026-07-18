@@ -1,17 +1,19 @@
 /**
- * ROLETA VISIT BRAGA — CONFIGURAÇÃO DOS PRÉMIOS
+ * ROLETA VISIT BRAGA - CONFIGURAÇÃO DOS PRÉMIOS
  * ------------------------------------------------
- * id     → identificador único (não repetir!) — é a chave do stock na base de dados
+ * Quando tiveres a lista final, edita apenas este ficheiro.
+ *
+ * id     → identificador único (não repetir!) - é a chave do stock na base de dados
  * nome   → texto na fatia (curto! máx. ~2 palavras por linha)
  * linha2 → (opcional) segunda linha
  * peso   → probabilidade relativa (maior = sai mais vezes)
  * ganha  → false para fatias sem prémio ("Sem sorte desta vez")
  * stock  → unidades disponíveis; null = ilimitado (usa null nas fatias sem prémio)
  *
- * ODDS ATUAIS: as fatias "sem sorte" têm peso 1 contra 5-6 dos prémios,
- * ou seja, sai prémio em ~91% dos giros (1 em cada ~11 fica sem sorte).
- * Para dar MAIS prémios ainda, baixa o peso das "sem sorte" para 0.5.
- * Para dar menos, sobe para 2 ou 3.
+ * NOTA: o stock aqui é o stock INICIAL. Depois do primeiro arranque,
+ * o stock real vive no Firestore e é gerido em tempo real (ou na página /admin).
+ * Se mudares os valores iniciais aqui, usa o botão "Repor stock inicial" na
+ * página /admin para os aplicar.
  */
 
 export type Premio = {
@@ -24,12 +26,12 @@ export type Premio = {
 };
 
 export const PREMIOS: Premio[] = [
-  { id: "moleskine",  nome: "BLOCO",     linha2: "MOLESKINE",  peso: 6, ganha: true,  stock: 148 },
-  { id: "semsorte1",  nome: "SEM SORTE", linha2: "DESTA VEZ",  peso: 1, ganha: false, stock: null },
-  { id: "tshirt_xl",  nome: "T-SHIRT",   linha2: "TAM. XL",    peso: 5, ganha: true,  stock: 94 },
-  { id: "blocoa6",    nome: "BLOCO",     linha2: "A6",         peso: 5, ganha: true,  stock: 94 },
-  { id: "semsorte2",  nome: "SEM SORTE", linha2: "DESTA VEZ",  peso: 1, ganha: false, stock: null },
-  { id: "tshirt_s",   nome: "T-SHIRT",   linha2: "TAM. S",     peso: 5, ganha: true,  stock: 90 },
+  { id: "moleskine",  nome: "BLOCO",     linha2: "MOLESKINE",  peso: 5, ganha: true,  stock: 89 },
+  { id: "semsorte1",  nome: "SEM SORTE", linha2: "DESTA VEZ",  peso: 4, ganha: false, stock: null },
+  { id: "tshirt_xl",  nome: "T-SHIRT",   linha2: "TAM. XL",    peso: 4, ganha: true,  stock: 57 },
+  { id: "blocoa6",    nome: "BLOCO",     linha2: "A6",         peso: 4, ganha: true,  stock: 57 },
+  { id: "semsorte2",  nome: "SEM SORTE", linha2: "DESTA VEZ",  peso: 4, ganha: false, stock: null },
+  { id: "tshirt_s",   nome: "T-SHIRT",   linha2: "TAM. S",     peso: 4, ganha: true,  stock: 52 },
 ];
 
 /** mapa { id: stock } com os valores iniciais acima */
