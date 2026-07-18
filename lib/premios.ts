@@ -26,12 +26,12 @@ export type Premio = {
 };
 
 export const PREMIOS: Premio[] = [
-  { id: "moleskine", nome: "BLOCO",     linha2: "MOLESKINE", peso: 5, ganha: true,  stock: 83 },
+  { id: "moleskine", nome: "BLOCO",     linha2: "MOLESKINE", peso: 5, ganha: true,  stock: 68 },
   { id: "semsorte1", nome: "SEM SORTE", linha2: "DESTA VEZ", peso: 5, ganha: false, stock: null },
-  { id: "tshirt_xl", nome: "T-SHIRT",   linha2: "TAM. XL",   peso: 3, ganha: true,  stock: 53 },
-  { id: "blocoa6",   nome: "BLOCO",     linha2: "A6",        peso: 4, ganha: true,  stock: 55 },
+  { id: "tshirt_xl", nome: "T-SHIRT",   linha2: "TAM. XL",   peso: 2, ganha: true,  stock: 47 },
+  { id: "blocoa6",   nome: "BLOCO",     linha2: "A6",        peso: 5, ganha: true,  stock: 41 },
   { id: "semsorte2", nome: "SEM SORTE", linha2: "DESTA VEZ", peso: 5, ganha: false, stock: null },
-  { id: "tshirt_s",  nome: "T-SHIRT",   linha2: "TAM. S",    peso: 3, ganha: true,  stock: 48 },
+  { id: "tshirt_s",  nome: "T-SHIRT",   linha2: "TAM. S",    peso: 2, ganha: true,  stock: 39 },
 ];
 
 /** mapa { id: stock } com os valores iniciais acima */
